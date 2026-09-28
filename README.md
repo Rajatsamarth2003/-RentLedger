@@ -24,31 +24,6 @@ RentLedger is a Flask-based property desk application designed to make monthly r
 | 📊 Monthly Report | Review monthly totals |
 | 🔐 Authentication | Login and registration |
 
----
-
-# 🖥️ Screenshots
-
-## 🔐 Login
-
-![RentLedger Login]("C:\Users\rsama\Pictures\Screenshots\Screenshot 2026-09-28 174856.png")
-
-## 📊 Overview Dashboard
-
-![RentLedger Overview](screenshots/02-overview.png)
-
-## 👨‍👩‍👧‍👦 Family Directory
-
-![RentLedger Families](screenshots/03-families.png)
-
-## 📅 Monthly Report
-
-![RentLedger Monthly Report](screenshots/04-monthly-report.png)
-
-## 🗂️ Bill History
-
-![RentLedger Bill History](screenshots/05-bill-history.png)
-
----
 
 # 🧮 Billing Logic
 
