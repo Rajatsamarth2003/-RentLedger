@@ -30,7 +30,7 @@ RentLedger is a Flask-based property desk application designed to make monthly r
 
 ## 🔐 Login
 
-![RentLedger Login](screenshots/01-login.png)
+![RentLedger Login]("C:\Users\rsama\Pictures\Screenshots\Screenshot 2026-09-28 174856.png")
 
 ## 📊 Overview Dashboard
 
