@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Add family · RentLedger{% endblock %}
+
+{% block content %}
+<div class="form-wrap">
+    <div class="form-intro">
+        <span class="eyebrow">NEW RECORD</span>
+        <h1>Add a family</h1>
+        <p>This creates the family profile. The actual rent used in each monthly bill can always be entered separately.</p>
+    </div>
+
+    <form method="POST" class="form-card">
+        <label>Family name</label>
+        <input name="name" placeholder="e.g. Sharma Family" required>
+
+        <label>Default monthly rent</label>
+        <input name="default_rent" type="number" min="0" step="0.01" placeholder="4700" required>
+
+        <label>Move-in date</label>
+        <input name="move_in_date" type="date" required>
+
+        <div class="form-note">
+            <b>Good to know</b>
+            <span>Rent and electricity rate are saved with each monthly bill, so future changes won't rewrite old records.</span>
+        </div>
+
+        <button class="primary-btn" type="submit">Save family →</button>
+    </form>
+</div>
+{% endblock %}

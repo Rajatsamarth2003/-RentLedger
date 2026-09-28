@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create account · RentLedger</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-page">
+    <div class="login-card">
+        <div class="login-brand">
+            <span class="brand-mark">RL</span>
+            <div><strong>RentLedger</strong><small>Property Desk</small></div>
+        </div>
+        <h1>Create account</h1>
+        <p class="login-subtitle">Set up your account to manage rent, meter readings and monthly statements.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="post" class="login-form">
+            <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
+            <label>Username</label>
+            <input type="text" name="username" autocomplete="username" minlength="3" maxlength="40" required autofocus>
+            <small class="field-note">3–40 characters; letters, numbers, hyphens and underscores.</small>
+
+            <label>Password</label>
+            <div class="password-wrap">
+                <input id="signup-password" type="password" name="password" autocomplete="new-password" minlength="6" required>
+                <button type="button" class="password-toggle" data-target="signup-password">Show</button>
+            </div>
+
+            <label>Confirm password</label>
+            <div class="password-wrap">
+                <input id="signup-confirm-password" type="password" name="confirm_password" autocomplete="new-password" minlength="6" required>
+                <button type="button" class="password-toggle" data-target="signup-confirm-password">Show</button>
+            </div>
+
+            <button type="submit" class="btn primary login-btn">Create account</button>
+        </form>
+
+        <div class="auth-switch">
+            <span>Already have an account?</span>
+            <a href="{{ url_for('login') }}">Sign in</a>
+        </div>
+        <p class="login-footer">Private property records · RentLedger</p>
+    </div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

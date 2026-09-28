@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Bill history · RentLedger{% endblock %}
+
+{% block content %}
+<div class="page-title-row">
+    <div>
+        <span class="eyebrow">ARCHIVE</span>
+        <h1>Bill history</h1>
+        <p>Every saved monthly statement, including old families.</p>
+    </div>
+</div>
+
+<div class="table-card">
+<table>
+    <thead>
+        <tr>
+            <th>Family</th>
+            <th>Month</th>
+            <th>Rent</th>
+            <th>Units</th>
+            <th>Rate</th>
+            <th>Total</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for bill in bills %}
+        <tr>
+            <td><b>{{ bill["family_name"] }}</b></td>
+            <td>{{ bill["month"] }}</td>
+            <td>₹{{ "{:,.0f}".format(bill["rent"]) }}</td>
+            <td>{{ "%.0f"|format(bill["entered_units"]) }}</td>
+            <td>₹{{ "%.0f"|format(bill["electricity_rate"]) }}</td>
+            <td><b>₹{{ "{:,.0f}".format(bill["total_amount"]) }}</b></td>
+            <td><a class="row-link" href="{{ url_for('view_bill', bill_id=bill['id']) }}">Open →</a></td>
+        </tr>
+    {% else %}
+        <tr><td colspan="7" class="empty-cell">Your saved bills will appear here.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

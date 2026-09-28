@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}Monthly bill · RentLedger{% endblock %}
+
+{% block content %}
+<div class="page-title-row">
+    <div>
+        <span class="eyebrow">MONTHLY ENTRY</span>
+        <h1>{{ family["name"] }}</h1>
+        <p>Upload the meter photo, check the reading, enter units and set this month's rate.</p>
+    </div>
+    <a class="text-link" href="{{ url_for('family_details', family_id=family['id']) }}">← Family history</a>
+</div>
+
+<form method="POST" enctype="multipart/form-data" id="billForm" data-family-id="{{ family['id'] }}">
+<div class="bill-layout">
+
+    <div class="bill-main">
+        <div class="form-card">
+            <div class="card-heading">
+                <div>
+                    <span class="eyebrow">01 · BILLING PERIOD</span>
+                    <h2>Month & rent</h2>
+                </div>
+            </div>
+
+            <div class="two-col">
+                <div>
+                    <label>Billing month</label>
+                    <input id="billingMonth" type="month" name="month" value="{{ selected_month }}" required>
+                </div>
+                <div>
+                    <label>This month's rent</label>
+                    <div class="input-prefix">
+                        <span>₹</span>
+                        <input name="rent" type="number" min="0" step="0.01"
+                               value="{{ family['default_rent'] }}" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="helper">Rent is entered per month, so a change next month won't alter older bills.</div>
+        </div>
+
+        <div class="form-card">
+            <div class="card-heading">
+                <div>
+                    <span class="eyebrow">02 · METER CHECK</span>
+                    <h2>Reading & units</h2>
+                </div>
+                <span class="reading-badge" id="previousBadge">Previous: {{ "%.0f"|format(previous_reading) }}</span>
+            </div>
+
+            <div class="previous-reading-row">
+                <div>
+                    <label for="previousReading">Previous meter reading</label>
+                    <input id="previousReading" type="number" value="{{ previous_reading }}" readonly>
+                    <small id="previousSource" class="field-note">
+                        {% if previous_reading > 0 %}
+                            Automatically taken from the last saved bill before {{ selected_month }}.
+                        {% else %}
+                            No earlier bill found for this family. Starting from 0.
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+
+            <label>Meter photo</label>
+            <div class="upload-box" id="uploadBox">
+                <input type="file" id="meterImage" name="meter_image" accept="image/*" required>
+                <div class="upload-icon">↑</div>
+                <b>Drop a photo here or click to browse</b>
+                <small>JPG, PNG or WEBP · Clear digits work best</small>
+                <div id="fileName" class="file-name"></div>
+            </div>
+
+            <div class="scan-row">
+                <button type="button" class="secondary-btn" id="scanBtn">Scan photo</button>
+                <span id="scanStatus" class="scan-status">OCR is a cross-check only.</span>
+            </div>
+
+            <div id="ocrResult" class="ocr-panel hidden">
+                <div>
+                    <span class="stat-label">OCR detected</span>
+                    <strong id="ocrReading">—</strong>
+                </div>
+                <div>
+                    <span class="stat-label">Confidence</span>
+                    <strong id="ocrConfidence">—</strong>
+                </div>
+                <p id="ocrMessage"></p>
+            </div>
+
+            <input type="hidden" name="ocr_reading" id="ocrReadingInput">
+            <input type="hidden" name="ocr_confidence" id="ocrConfidenceInput">
+
+            <div class="two-col meter-fields">
+                <div>
+                    <label>Current meter reading</label>
+                    <input id="currentReading" name="current_reading" type="number"
+                           min="0" step="0.01" required>
+                </div>
+                <div>
+                    <label>Units used — manual check</label>
+                    <input id="enteredUnits" name="units" type="number"
+                           min="0" step="0.01" required>
+                </div>
+            </div>
+
+            <div id="matchBox" class="match-box hidden"></div>
+        </div>
+
+        <div class="form-card">
+            <div class="card-heading">
+                <div>
+                    <span class="eyebrow">03 · ELECTRICITY</span>
+                    <h2>Choose this month's rate</h2>
+                </div>
+            </div>
+
+            <label>Rate per unit</label>
+            <div class="rate-grid">
+                {% for rate in range(11, 21) %}
+                <label class="rate-option">
+                    <input type="radio" name="rate" value="{{ rate }}" required>
+                    <span>₹{{ rate }}</span>
+                </label>
+                {% endfor %}
+            </div>
+
+            <div class="helper">The selected rate is stored with this bill only.</div>
+        </div>
+
+        <button class="primary-btn big-submit" type="submit">Save monthly bill →</button>
+    </div>
+
+    <aside class="bill-preview">
+        <span class="eyebrow">LIVE PREVIEW</span>
+        <h3>What will be saved</h3>
+
+        <div class="preview-line">
+            <span>Rent</span>
+            <b id="previewRent">₹{{ "{:,.0f}".format(family["default_rent"]) }}</b>
+        </div>
+        <div class="preview-line">
+            <span>Units</span>
+            <b id="previewUnits">—</b>
+        </div>
+        <div class="preview-line">
+            <span>Rate</span>
+            <b id="previewRate">—</b>
+        </div>
+        <div class="preview-line">
+            <span>Electricity</span>
+            <b id="previewElectricity">₹0</b>
+        </div>
+
+        <div class="preview-total">
+            <span>Total</span>
+            <strong id="previewTotal">₹0</strong>
+        </div>
+
+        <p class="preview-note">The previous reading is automatic. Enter only the current reading and your manual units.</p>
+    </aside>
+
+</div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/bill.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login · RentLedger</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-page">
+    <div class="login-card">
+        <div class="login-brand">
+            <span class="brand-mark">RL</span>
+            <div><strong>RentLedger</strong><small>Property Desk</small></div>
+        </div>
+        <h1>Welcome back</h1>
+        <p class="login-subtitle">Sign in to manage rent, meter readings and monthly statements.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="post" class="login-form">
+            <label>Username</label>
+            <input type="text" name="username" autocomplete="username" required autofocus>
+
+            <label>Password</label>
+            <div class="password-wrap">
+                <input id="login-password" type="password" name="password" autocomplete="current-password" required>
+                <button type="button" class="password-toggle" data-target="login-password">Show</button>
+            </div>
+
+            <button type="submit" class="btn primary login-btn">Sign in</button>
+        </form>
+        <div class="auth-switch">
+            <span>New to RentLedger?</span>
+            <a href="{{ url_for('signup') }}">Create an account</a>
+        </div>
+        <p class="login-footer">Private property records · RentLedger</p>
+    </div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

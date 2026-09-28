@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Monthly report · RentLedger{% endblock %}
+
+{% block content %}
+<div class="page-title-row">
+    <div>
+        <span class="eyebrow">REPORT</span>
+        <h1>Monthly report</h1>
+        <p>One-page view of everything billed in a selected month.</p>
+    </div>
+    <form class="inline-form" method="GET">
+        <input type="month" name="month" value="{{ month }}">
+        <button class="secondary-btn" type="submit">View month</button>
+    </form>
+</div>
+
+<section class="stat-grid">
+    <div class="stat-card"><span class="stat-label">Rent</span><strong>₹{{ "{:,.0f}".format(summary["rent"]) }}</strong></div>
+    <div class="stat-card"><span class="stat-label">Electricity</span><strong>₹{{ "{:,.0f}".format(summary["electricity"]) }}</strong></div>
+    <div class="stat-card"><span class="stat-label">Units</span><strong>{{ "{:,.0f}".format(summary["units"]) }}</strong></div>
+    <div class="stat-card accent-card"><span class="stat-label">Grand total</span><strong>₹{{ "{:,.0f}".format(summary["total"]) }}</strong></div>
+</section>
+
+<div class="table-card">
+<table>
+    <thead>
+        <tr>
+            <th>Family</th>
+            <th>Rent</th>
+            <th>Units</th>
+            <th>Rate</th>
+            <th>Electricity</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for bill in bills %}
+        <tr>
+            <td><b>{{ bill["family_name"] }}</b></td>
+            <td>₹{{ "{:,.0f}".format(bill["rent"]) }}</td>
+            <td>{{ "%.0f"|format(bill["entered_units"]) }}</td>
+            <td>₹{{ "%.0f"|format(bill["electricity_rate"]) }}</td>
+            <td>₹{{ "{:,.0f}".format(bill["electricity_bill"]) }}</td>
+            <td><b>₹{{ "{:,.0f}".format(bill["total_amount"]) }}</b></td>
+        </tr>
+    {% else %}
+        <tr><td colspan="6" class="empty-cell">No bills for {{ month }}.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

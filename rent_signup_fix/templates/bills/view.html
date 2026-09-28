@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Bill {{ bill["month"] }} · RentLedger{% endblock %}
+
+{% block content %}
+<div class="page-title-row">
+    <div>
+        <span class="eyebrow">SAVED STATEMENT</span>
+        <h1>{{ bill["family_name"] }}</h1>
+        <p>{{ bill["month"] }} · Record #{{ bill["id"] }}</p>
+    </div>
+    <div class="action-row">
+        <a class="secondary-btn" href="{{ url_for('bill_pdf', bill_id=bill['id']) }}">PDF</a>
+        <button class="primary-btn" onclick="window.print()">Print</button>
+    </div>
+</div>
+
+<div class="bill-sheet">
+    <div class="sheet-header">
+        <div>
+            <span class="eyebrow">MONTHLY RENT STATEMENT</span>
+            <h2>{{ bill["family_name"] }}</h2>
+        </div>
+        <strong>{{ bill["month"] }}</strong>
+    </div>
+
+    <div class="sheet-grid">
+        <div>
+            <span>Previous reading</span>
+            <b>{{ "%.0f"|format(bill["previous_reading"]) }}</b>
+        </div>
+        <div>
+            <span>Current reading</span>
+            <b>{{ "%.0f"|format(bill["current_reading"]) }}</b>
+        </div>
+        <div>
+            <span>Meter units</span>
+            <b>{{ "%.0f"|format(bill["calculated_units"]) }}</b>
+        </div>
+        <div>
+            <span>Entered units</span>
+            <b>{{ "%.0f"|format(bill["entered_units"]) }}</b>
+        </div>
+    </div>
+
+    {% if difference|abs < 0.01 %}
+        <div class="check-good">✓ Unit cross-check matched</div>
+    {% else %}
+        <div class="check-warn">⚠ Unit difference: {{ "%.0f"|format(difference|abs) }}</div>
+    {% endif %}
+
+    <div class="statement-table">
+        <div><span>Monthly rent</span><b>₹{{ "{:,.2f}".format(bill["rent"]) }}</b></div>
+        <div><span>Electricity · {{ "%.0f"|format(bill["entered_units"]) }} units × ₹{{ "%.0f"|format(bill["electricity_rate"]) }}</span><b>₹{{ "{:,.2f}".format(bill["electricity_bill"]) }}</b></div>
+        <div class="grand"><span>Total payable</span><b>₹{{ "{:,.2f}".format(bill["total_amount"]) }}</b></div>
+    </div>
+
+    <div class="ocr-foot">
+        OCR reading:
+        <b>{{ "%.0f"|format(bill["ocr_reading"]) if bill["ocr_reading"] is not none else "Not scanned" }}</b>
+        {% if bill["ocr_confidence"] is not none %}
+            · Confidence {{ "%.1f"|format(bill["ocr_confidence"] * 100) }}%
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

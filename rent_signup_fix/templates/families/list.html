@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Families · RentLedger{% endblock %}
+
+{% block content %}
+<div class="page-title-row">
+    <div>
+        <span class="eyebrow">TENANT DIRECTORY</span>
+        <h1>Families</h1>
+        <p>Keep current residents active and preserve old records when someone moves out.</p>
+    </div>
+    <a class="primary-btn" href="{{ url_for('add_family') }}">+ Add family</a>
+</div>
+
+<div class="table-card">
+<table>
+    <thead>
+        <tr>
+            <th>Family</th>
+            <th>Default rent</th>
+            <th>Move in</th>
+            <th>Status</th>
+            <th>Saved bills</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for family in families %}
+        <tr>
+            <td>
+                <div class="table-person">
+                    <span class="mini-avatar">{{ family["name"][0]|upper }}</span>
+                    <div>
+                        <b>{{ family["name"] }}</b>
+                        <small>F{{ "%03d"|format(family["id"]) }}</small>
+                    </div>
+                </div>
+            </td>
+            <td>₹{{ "{:,.0f}".format(family["default_rent"]) }}</td>
+            <td>{{ family["move_in_date"] }}</td>
+            <td>
+                <span class="status-pill {{ 'active' if family['status']=='Active' else 'inactive' }}">
+                    {{ family["status"] }}
+                </span>
+            </td>
+            <td>{{ family["bill_count"] }}</td>
+            <td>
+                <div class="action-row">
+                    <a class="row-link" href="{{ url_for('family_details', family_id=family['id']) }}">Details →</a>
+                    {% if family["bill_count"] == 0 %}
+                    <form method="POST" action="{{ url_for('delete_family', family_id=family['id']) }}" onsubmit="return confirm('Delete {{ family["name"]|e }}? This family has no saved bills.');">
+                        <button class="link-danger" type="submit">Delete</button>
+                    </form>
+                    {% else %}
+                    <span class="delete-hint">History saved</span>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+    {% else %}
+        <tr><td colspan="7" class="empty-cell">No families added.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

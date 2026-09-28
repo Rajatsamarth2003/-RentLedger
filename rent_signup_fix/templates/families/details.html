@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}{{ family["name"] }} · RentLedger{% endblock %}
+
+{% block content %}
+<div class="page-title-row">
+    <div class="profile-heading">
+        <div class="avatar large">{{ family["name"][0]|upper }}</div>
+        <div>
+            <span class="eyebrow">F{{ "%03d"|format(family["id"]) }}</span>
+            <h1>{{ family["name"] }}</h1>
+            <p>{{ family["status"] }} · Moved in {{ family["move_in_date"] }}</p>
+        </div>
+    </div>
+    {% if family["status"] == "Active" %}
+    <a class="primary-btn" href="{{ url_for('create_bill', family_id=family['id']) }}">+ Monthly bill</a>
+    {% endif %}
+</div>
+
+<section class="stat-grid compact">
+    <div class="stat-card">
+        <span class="stat-label">Saved bills</span>
+        <strong>{{ bills|length }}</strong>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Total billed</span>
+        <strong>₹{{ "{:,.0f}".format(totals["total_amount"]) }}</strong>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Units recorded</span>
+        <strong>{{ "{:,.0f}".format(totals["units"]) }}</strong>
+    </div>
+</section>
+
+<div class="section-heading">
+    <div>
+        <span class="eyebrow">MONTH BY MONTH</span>
+        <h2>Billing history</h2>
+    </div>
+</div>
+
+<div class="table-card">
+<table>
+    <thead>
+        <tr>
+            <th>Month</th>
+            <th>Rent</th>
+            <th>Units</th>
+            <th>Rate</th>
+            <th>Electricity</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for bill in bills %}
+        <tr>
+            <td><a class="row-link" href="{{ url_for('view_bill', bill_id=bill['id']) }}">{{ bill["month"] }}</a></td>
+            <td>₹{{ "{:,.0f}".format(bill["rent"]) }}</td>
+            <td>{{ "%.0f"|format(bill["entered_units"]) }}</td>
+            <td>₹{{ "%.0f"|format(bill["electricity_rate"]) }}</td>
+            <td>₹{{ "{:,.0f}".format(bill["electricity_bill"]) }}</td>
+            <td><b>₹{{ "{:,.0f}".format(bill["total_amount"]) }}</b></td>
+        </tr>
+    {% else %}
+        <tr><td colspan="6" class="empty-cell">No monthly bills yet.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+
+{% if family["status"] == "Active" %}
+<div class="danger-zone">
+    <div>
+        <b>Family moved out?</b>
+        <p>Mark them inactive. Nothing in their previous history will be deleted.</p>
+    </div>
+    <form method="POST" action="{{ url_for('deactivate_family', family_id=family['id']) }}">
+        <input type="date" name="move_out_date" required>
+        <button class="danger-btn" type="submit">Mark moved out</button>
+    </form>
+</div>
+{% endif %}
+
+{% if bills|length == 0 %}
+<div class="delete-panel">
+    <div>
+        <b>Delete this family</b>
+        <p>This is available because there are no saved bills. Families with billing history cannot be deleted.</p>
+    </div>
+    <form method="POST" action="{{ url_for('delete_family', family_id=family['id']) }}" onsubmit="return confirm('Delete {{ family["name"]|e }} permanently?');">
+        <button class="danger-btn" type="submit">Delete family</button>
+    </form>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}Overview · RentLedger{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <span class="eyebrow">MONTHLY CONTROL</span>
+        <h1>Everything in one place.</h1>
+        <p>Upload a meter photo, confirm the numbers, and keep a clean record for every family.</p>
+    </div>
+    <a class="primary-btn" href="{{ url_for('families') }}">
+        Manage families <span>→</span>
+    </a>
+</section>
+
+<section class="stat-grid">
+    <div class="stat-card">
+        <span class="stat-label">Total billed</span>
+        <strong>₹{{ "{:,.0f}".format(stats["total_billed"]) }}</strong>
+        <small>Across saved bills</small>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Electricity</span>
+        <strong>₹{{ "{:,.0f}".format(stats["total_electricity"]) }}</strong>
+        <small>Recorded usage charges</small>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Units recorded</span>
+        <strong>{{ "{:,.0f}".format(stats["total_units"]) }}</strong>
+        <small>Manual cross-check values</small>
+    </div>
+    <div class="stat-card accent-card">
+        <span class="stat-label">Active families</span>
+        <strong>{{ families|length }}</strong>
+        <small>Currently staying here</small>
+    </div>
+</section>
+
+<div class="section-heading">
+    <div>
+        <span class="eyebrow">FAMILY OVERVIEW</span>
+        <h2>Each family, separately</h2>
+        <p class="section-note">Every family has its own saved bills, electricity, units and total.</p>
+    </div>
+    <a class="text-link" href="{{ url_for('families') }}">Manage families →</a>
+</div>
+
+<section class="family-overview-grid">
+    {% for family in family_overviews %}
+    <article class="family-overview-card">
+        <div class="family-overview-head">
+            <div class="table-person">
+                <span class="avatar">{{ family["name"][0]|upper }}</span>
+                <div>
+                    <h3>{{ family["name"] }}</h3>
+                    <small>F{{ "%03d"|format(family["id"]) }} · {{ family["status"] }}</small>
+                </div>
+            </div>
+            <span class="status-pill {{ 'active' if family['status']=='Active' else 'inactive' }}">{{ family["status"] }}</span>
+        </div>
+
+        <div class="family-overview-stats">
+            <div><span>Bills</span><b>{{ family["bill_count"] }}</b></div>
+            <div><span>Units</span><b>{{ "{:,.0f}".format(family["total_units"]) }}</b></div>
+            <div><span>Electricity</span><b>₹{{ "{:,.0f}".format(family["total_electricity"]) }}</b></div>
+            <div><span>Total billed</span><b>₹{{ "{:,.0f}".format(family["total_billed"]) }}</b></div>
+        </div>
+
+        <div class="family-overview-footer">
+            <span>Last bill: {{ family["last_bill_month"] or "No bills yet" }}</span>
+            <a class="row-link" href="{{ url_for('family_details', family_id=family['id']) }}">Open →</a>
+        </div>
+    </article>
+    {% else %}
+    <div class="empty-state">
+        <h3>No families yet</h3>
+        <p>Add your first family to start keeping monthly records.</p>
+        <a class="primary-btn" href="{{ url_for('add_family') }}">Add first family</a>
+    </div>
+    {% endfor %}
+</section>
+
+<div class="section-heading">
+    <div>
+        <span class="eyebrow">QUICK ENTRY</span>
+        <h2>Active families</h2>
+    </div>
+    <a class="text-link" href="{{ url_for('add_family') }}">+ Add family</a>
+</div>
+
+<section class="family-grid">
+    {% for family in families %}
+    <article class="family-card">
+        <div class="family-top">
+            <div class="avatar">{{ family["name"][0]|upper }}</div>
+            <span class="status-pill active">Active</span>
+        </div>
+        <h3>{{ family["name"] }}</h3>
+        <p class="muted">Since {{ family["move_in_date"] }}</p>
+
+        <div class="family-meta">
+            <div>
+                <span>Default rent</span>
+                <b>₹{{ "{:,.0f}".format(family["default_rent"]) }}</b>
+            </div>
+            <div>
+                <span>Billing rate</span>
+                <b>₹{{ min_rate }}–₹{{ max_rate }}</b>
+            </div>
+        </div>
+
+        <a class="soft-btn" href="{{ url_for('create_bill', family_id=family['id']) }}">
+            Enter this month's bill →
+        </a>
+    </article>
+    {% else %}
+    <div class="empty-state">
+        <h3>No families yet</h3>
+        <p>Add your first family to start keeping monthly records.</p>
+        <a class="primary-btn" href="{{ url_for('add_family') }}">Add first family</a>
+    </div>
+    {% endfor %}
+</section>
+
+<div class="section-heading">
+    <div>
+        <span class="eyebrow">LATEST</span>
+        <h2>Recent bills</h2>
+    </div>
+    <a class="text-link" href="{{ url_for('bill_history') }}">View all →</a>
+</div>
+
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th>Family</th>
+                <th>Month</th>
+                <th>Units</th>
+                <th>Rate</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for bill in recent_bills %}
+            <tr>
+                <td><b>{{ bill["family_name"] }}</b></td>
+                <td>{{ bill["month"] }}</td>
+                <td>{{ "%.0f"|format(bill["entered_units"]) }}</td>
+                <td>₹{{ "%.0f"|format(bill["electricity_rate"]) }}</td>
+                <td><b>₹{{ "{:,.0f}".format(bill["total_amount"]) }}</b></td>
+                <td><a class="row-link" href="{{ url_for('view_bill', bill_id=bill['id']) }}">Open</a></td>
+            </tr>
+        {% else %}
+            <tr><td colspan="6" class="empty-cell">No bills saved yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

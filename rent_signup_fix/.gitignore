@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+database/*.db
+uploads/meter_images/*
+generated_bills/pdf/*
+.vscode/
